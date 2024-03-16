@@ -35,6 +35,7 @@ struct SearchView: View {
                     .onChange(of: searchText, { oldValue, newValue in
                         apiError = false
                     })
+                    .autocorrectionDisabled(true)
                     .submitLabel(.search)
                     .onSubmit {
                         isSearchCompleted = 2
