@@ -14,6 +14,7 @@ struct SearchView: View {
     @State var isSearchCompleted = 1
     @State var apiError = false
     @State var loading = false
+    @State var noResults = false
     
     
     @State var license: License?
@@ -34,12 +35,14 @@ struct SearchView: View {
                     .foregroundStyle(.black)
                     .onChange(of: searchText, { oldValue, newValue in
                         apiError = false
+                        noResults = false
                     })
                     .autocorrectionDisabled(true)
                     .submitLabel(.search)
                     .onSubmit {
                         isSearchCompleted = 2
                         apiError = false
+                        noResults = false
                         let jsonString = searchCallSign(CallSign: searchText)
                         if jsonString == "Error" {
                             license = nil
@@ -53,7 +56,7 @@ struct SearchView: View {
                                     isSearchCompleted = 3
                                 } catch {
                                     license = nil
-                                    apiError = true
+                                    noResults = true
                                     print("Error decoding JSON: \(error)")
                                     isSearchCompleted = 3
                                 }
@@ -111,6 +114,13 @@ struct SearchView: View {
                 .font(.title)
                 .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                 
+            }
+            if (noResults){
+                ContentUnavailableView {
+                    Label("No results", systemImage: "person.crop.circle.badge.exclamationmark")
+                } description: {
+                    Text("Enter a valid US callsign.")
+                }
             }
             Spacer()
             VStack{
