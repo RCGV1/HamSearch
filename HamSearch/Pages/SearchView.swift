@@ -10,6 +10,7 @@ import MapKit
 
 struct SearchView: View {
     
+    @FocusState var keyboardFocused
     @State var searchText: String = ""
     @State var isSearchCompleted = 1
     @State var apiError = false
@@ -36,10 +37,27 @@ struct SearchView: View {
                     .onChange(of: searchText, { oldValue, newValue in
                         apiError = false
                         noResults = false
+                        license = nil
                     })
+                    .focused($keyboardFocused)
                     .autocorrectionDisabled(true)
+                    .toolbar{
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button {
+                                keyboardFocused = false
+                            } label: {
+                                Image(systemName: "keyboard.chevron.compact.down")
+                                    .foregroundStyle(.blue)
+                            }
+                            
+
+                        }
+                    }
+                
                     .submitLabel(.search)
                     .onSubmit {
+                        print("Submitted")
                         isSearchCompleted = 2
                         apiError = false
                         noResults = false
@@ -103,8 +121,9 @@ struct SearchView: View {
                     .scaleEffect(3)
                     
             }
+           
             if (license != nil){
-                LicenseView(license: license!)
+                LicenseView(license: license!) 
             }
             if (apiError){
                 VStack{
@@ -131,7 +150,10 @@ struct SearchView: View {
             .font(.footnote)
             .foregroundColor(.gray)
         }
+        .scrollDismissesKeyboard(.interactively)
+
     }
+
     
 }
 
